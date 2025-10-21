@@ -1,9 +1,32 @@
 import { readConfig, setUser } from "./config.js";
+import {
+  type CommandsRegistry,
+  registerCommand,
+  runCommand,
+  handlerLogin, 
+} from "./commands/commands";
 
 export function main() {
-  setUser("Test");
-  const cfg = readConfig();
-  console.log(cfg);
-}
+  const args = process.argv.slice(2);
+  if (args.length < 1) {
+      console.log("usage: <command> [args...]");
+      process.exit(1);
+  }
 
+  const cmdName = args[0];
+  const cmdArgs = args.slice(1);
+  const commandsRegistry: CommandsRegistry = {};
+
+  registerCommand(commandsRegistry, "login", handlerLogin);
+  try {
+      runCommand(commandsRegistry, cmdName, ...cmdArgs);
+  } catch (err) {
+      if (err instanceof Error) {
+          console.error(`Error running command ${cmdName}: ${err.message}`);
+      } else {
+          console.error(`Error running command ${cmdName}: ${err}`);
+      }
+      process.exit(1);
+  }
+}
 main();

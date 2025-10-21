@@ -22,7 +22,7 @@ export function readConfig() {
 };
 
 function getConfigFilePath() {
-    const configFileName = ".gatorconfig2.json";
+    const configFileName = ".gatorconfig.json";
     const homeDir = os.homedir();
     return path.join(homeDir, configFileName);
 };
@@ -37,11 +37,22 @@ function writeConfig(config: Config) {
     fs.writeFileSync(fullPath, data, { encoding: "utf-8" });
 };
 
-function validateConfig(rawConfig: any): Config {
-    const dbUrl = rawConfig.db_url;
-    const currentUserName = rawConfig.current_user_name;
-    if (dbUrl === undefined) {
-        throw new Error("rawConfig is missing db_url.");
+
+function validateConfig(rawConfig: any) {
+    if (!rawConfig.db_url || typeof rawConfig.db_url !== "string") {
+      throw new Error("db_url is required in config file");
     }
-    return { dbUrl: dbUrl, currentUserName: currentUserName ?? ""};
-}
+    if (
+      !rawConfig.current_user_name ||
+      typeof rawConfig.current_user_name !== "string"
+    ) {
+      throw new Error("current_user_name is required in config file");
+    }
+  
+    const config: Config = {
+      dbUrl: rawConfig.db_url,
+      currentUserName: rawConfig.current_user_name,
+    };
+  
+    return config;
+  }
