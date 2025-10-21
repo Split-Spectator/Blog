@@ -4,9 +4,10 @@ import {
   registerCommand,
   runCommand,
   handlerLogin, 
+  handlerRegister, 
 } from "./commands/commands";
 
-export function main() {
+export async function main() {
   const args = process.argv.slice(2);
   if (args.length < 1) {
       console.log("usage: <command> [args...]");
@@ -17,9 +18,11 @@ export function main() {
   const cmdArgs = args.slice(1);
   const commandsRegistry: CommandsRegistry = {};
 
-  registerCommand(commandsRegistry, "login", handlerLogin);
+ await registerCommand(commandsRegistry, "login", handlerLogin);
+ await registerCommand(commandsRegistry, "register", handlerRegister);
+ 
   try {
-      runCommand(commandsRegistry, cmdName, ...cmdArgs);
+      await runCommand(commandsRegistry, cmdName, ...cmdArgs);
   } catch (err) {
       if (err instanceof Error) {
           console.error(`Error running command ${cmdName}: ${err.message}`);
@@ -28,5 +31,6 @@ export function main() {
       }
       process.exit(1);
   }
+  process.exit(0);
 }
 main();
