@@ -1,9 +1,8 @@
 import { XMLParser } from "fast-xml-parser";
 import { readConfig } from "../config";
 import { User, Feed } from "src/lib/db/schema";
-import { createFeed } from "../lib/db/queries/feeds";
-import { getUserByName } from "../lib/db/queries/users";
-
+import { createFeed, getFeeds } from "../lib/db/queries/feeds";
+import { getUserById, getUserByName } from "../lib/db/queries/users";
 
 export async function fetchFeed(feedURL: string): Promise<RSSFeed> {
     const UA = "gator";
@@ -92,6 +91,25 @@ type RSSItem = {
     console.log("Feed created successfully:");
     printFeed(feed, user);
 }
+
+export async function handlerFeeds(_: string) {
+    const feeds = await getFeeds();
+    if (feeds.length === 0) {
+        console.log(`No feeds found.`);
+        return;
+    }
+    console.log(`Found %d feeds:\n`, feeds.length);
+    for (let feed of feeds) {
+        const row = await getUserById(feed.userID);
+        if (!row) {
+            throw new Error(`Failed to find user for feed ${feed.id}`);
+        }
+        const user = row[0]
+        printFeed(feed, user);
+        console.log(`===================================`);
+    }
+}
+
 
 function printFeed(feed: Feed, user: User) {
     console.log(`* ID:            ${feed.id}`);

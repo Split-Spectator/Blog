@@ -24,3 +24,14 @@ export async function createFeed(
 
 }
 
+export async function getFeeds() {
+    try {
+        return await db
+            .select()
+            .from(feeds)
+    } catch (error) {
+       console.error('Database error details:', error);
+        throw error;
+    }
+}
+
