@@ -1,7 +1,8 @@
 
 import { DrizzleQueryError } from "drizzle-orm";
 import { readConfig, setUser } from "../config";
-import { createUser, getUserByName, deleteUsers, getUsers  } from "src/lib/db/queries/users"
+import {fetchFeed, RSSFeed} from "./feeds.js";
+import { createUser, getUserByName, deleteUsers, getUsers  } from "src/lib/db/queries/users";
 export type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
 export type CommandsRegistry = Record<string, CommandHandler>;
  
@@ -102,4 +103,21 @@ export async function handlerUsers(_cmdName: string, ..._args: string[]) {
         for (const user of users) {
             console.log(`* ${user.name}${currentUserName == user.name ? " (current)" : ""}`)
         }
+    }
+
+    export async function handlerAgg(cmdName: string, ...args: string[]): Promise<void> {
+        /*
+        if (args.length !== 1) {
+            throw new Error(`usage: ${cmdName} <feed>`);
+        }
+            */
+        const feedUrl = "https://www.wagslane.dev/index.xml" // args[0];
+        let result = undefined;
+        try {
+            result = await fetchFeed(feedUrl);
+        } catch (error) {
+            throw new Error(`Fetch failed: ${error}`);
+        }
+        console.log(JSON.stringify(result, null, 2));
+
     }
