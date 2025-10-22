@@ -6,6 +6,7 @@ import {
   handlerLogin, 
   handlerRegister, 
   handlerReset,
+  handlerUsers,
 } from "./commands/commands";
 
 export async function main() {
@@ -21,7 +22,8 @@ export async function main() {
 
  await registerCommand(commandsRegistry, "login", handlerLogin);
  await registerCommand(commandsRegistry, "register", handlerRegister);
- registerCommand(commandsRegistry, "reset", handlerReset);
+ await registerCommand(commandsRegistry, "reset", handlerReset);
+ await registerCommand(commandsRegistry, "users", handlerUsers)
  
   try {
       await runCommand(commandsRegistry, cmdName, ...cmdArgs);

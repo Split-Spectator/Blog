@@ -1,6 +1,7 @@
+
 import { DrizzleQueryError } from "drizzle-orm";
-import { setUser } from "../config";
-import {createUser, getUserByName, deleteUsers } from "src/lib/db/queries/users"
+import { readConfig, setUser } from "../config";
+import { createUser, getUserByName, deleteUsers, getUsers  } from "src/lib/db/queries/users"
 export type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
 export type CommandsRegistry = Record<string, CommandHandler>;
  
@@ -76,3 +77,29 @@ export async function handlerReset(_cmdName: string, ..._args: string[]) {
     }
     console.log("Reset successfull! Users deleted!");
 }
+
+
+export async function handlerUsers(_cmdName: string, ..._args: string[]) {
+    let users = undefined;
+    try {
+        users = await getUsers();
+    }
+    catch (error) {
+        console.log(error);
+        if (error instanceof DrizzleQueryError) {
+            throw new Error("Couldn't get users!");
+        }
+        else {
+            throw new Error(`Unknown error: ${error}`);
+        }
+    }
+        const config = readConfig();
+        const currentUserName = config.currentUserName;
+        if (users.length === 0) {
+            console.log("No users defined in the database!")
+            return;
+        }
+        for (const user of users) {
+            console.log(`* ${user.name}${currentUserName == user.name ? " (current)" : ""}`)
+        }
+    }
