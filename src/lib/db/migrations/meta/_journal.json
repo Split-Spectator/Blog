@@ -15,6 +15,13 @@
       "when": 1761152221872,
       "tag": "0001_workable_dark_phoenix",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1761172307051,
+      "tag": "0002_overjoyed_vision",
+      "breakpoints": true
     }
   ]
 }

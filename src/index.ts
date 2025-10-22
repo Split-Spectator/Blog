@@ -1,5 +1,5 @@
 import { readConfig, setUser } from "./config.js";
-import {handlerAddFeed, handlerFeeds }from "./commands/feeds";
+import {handlerAddFeed, handlerFeeds, handlerFollow, handlerListFollowing}from "./commands/feeds";
 import {
   type CommandsRegistry,
   registerCommand,
@@ -29,6 +29,8 @@ export async function main() {
  await registerCommand(commandsRegistry, "agg", handlerAgg);
  await registerCommand(commandsRegistry, "addfeed", handlerAddFeed);
  await registerCommand(commandsRegistry, "feeds", handlerFeeds);
+ await registerCommand(commandsRegistry, "follow", handlerFollow);
+ await registerCommand(commandsRegistry, "following", handlerListFollowing);
   try {
       await runCommand(commandsRegistry, cmdName, ...cmdArgs);
   } catch (err) {
