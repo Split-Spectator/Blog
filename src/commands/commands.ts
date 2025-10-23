@@ -107,23 +107,6 @@ export async function handlerUsers(_cmdName: string, ..._args: string[]) {
         }
     }
 
-    export async function handlerAgg(cmdName: string, ...args: string[]): Promise<void> {
-        /*
-        if (args.length !== 1) {
-            throw new Error(`usage: ${cmdName} <feed>`);
-        }
-            */
-        const feedUrl = "https://www.wagslane.dev/index.xml" // args[0];
-        let result = undefined;
-        try {
-            result = await fetchFeed(feedUrl);
-        } catch (error) {
-            throw new Error(`Fetch failed: ${error}`);
-        }
-        console.log(JSON.stringify(result, null, 2));
-
-    }
-
     export type UserCommandHandler = (
         cmdName: string,
         user: User,

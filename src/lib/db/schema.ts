@@ -14,14 +14,15 @@ export type User = typeof users.$inferSelect;
 
 export const feeds = pgTable("feeds",{
     id: uuid("id").primaryKey().defaultRandom().notNull(),
+    name: text("name").notNull().unique(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
           .notNull()
           .defaultNow()
           .$onUpdate(() => new Date()),
-    name: text("name").notNull().unique(),
     url: text("url").notNull().unique(),
     userID: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+    lastFetchAt: timestamp("last_fetch_at"),
   }
 );
 export type Feed = typeof feeds.$inferSelect;

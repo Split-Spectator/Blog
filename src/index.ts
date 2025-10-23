@@ -1,5 +1,6 @@
 import { readConfig, setUser } from "./config.js";
 import { middlewareLoggedIn } from "./commands/middleware";
+import {handlerAgg} from "./commands/aggregate.js"
 import {handlerAddFeed, handlerFeeds, handlerFollow, handlerListFollowing, handlerUnfollow}from "./commands/feeds";
 import {
   type CommandsRegistry,
@@ -9,7 +10,7 @@ import {
   handlerRegister, 
   handlerReset,
   handlerUsers,
-  handlerAgg,
+  
 } from "./commands/commands";
 
 export async function main() {
