@@ -4,10 +4,11 @@ import { readConfig, setUser } from "../config";
 import {fetchFeed, RSSFeed} from "./feeds.js";
 import { User } from "src/lib/db/schema";
 import { createUser, getUserByName, deleteUsers, getUsers  } from "src/lib/db/queries/users";
+import { getPostsForUsers } from "src/lib/db/queries/posts";
 import {middlewareLoggedIn} from "./middleware.js";
 export type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
 export type CommandsRegistry = Record<string, CommandHandler>;
- 
+export type UserCommandHandler = (cmdName: string, user: User,...args: string[]) => Promise<void>;
 
 export async function handlerLogin(cmdName: string, ...args: string[]) {
     if (args.length !== 1) {
@@ -107,9 +108,28 @@ export async function handlerUsers(_cmdName: string, ..._args: string[]) {
         }
     }
 
-    export type UserCommandHandler = (
+
+    export async function handlerBrowse(
         cmdName: string,
         user: User,
         ...args: string[]
-      ) => Promise<void>;
-      
+    ) {
+    let limit = 2;
+        if (args.length === 1) {
+            let specifiedLimit = parseInt(args[0]);
+        if (specifiedLimit) {
+            limit = specifiedLimit;
+        } else {
+            throw new Error(`usage: ${cmdName} [limit]`);
+            }
+        }
+        const posts = await getPostsForUsers(user.id, limit);
+        console.log(`Found ${posts.length} posts for user ${user.name}`);
+        for (let post of posts) {
+            console.log(`${post.publishedAt} from ${post.feedName}`);
+            console.log(`--- ${post.title} ---`);
+            console.log(`    ${post.description}`);
+            console.log(`Link: ${post.url}`);
+            console.log(`==========================================`);
+        }
+    }

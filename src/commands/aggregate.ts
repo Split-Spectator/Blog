@@ -1,6 +1,7 @@
 import { getNextFeedToFetch, markFeedFetched } from "src/lib/db/queries/feeds";
 import {fetchFeed } from "./feeds";
-import { Feed } from "src/lib/db/schema";
+import { Feed, NewPost } from "src/lib/db/schema";
+import { createPost } from "src/lib/db/queries/posts";
  
 async function scrapeFeeds() {
     const row = await getNextFeedToFetch();
@@ -16,9 +17,19 @@ async function scrapeFeeds() {
 async function scrapeFeed(feed: Feed) {
     await markFeedFetched(feed.id);
     const feedData = await fetchFeed(feed.url);
-    console.log(
-        `Feed ${feed.name} collected, ${feedData.channel.item.length} posts found`,
-    );
+    for (let item of feedData.channel.item) {
+        console.log(`Found post: %s`, item.title);
+        const now = new Date();
+        await createPost({
+            url: item.link,
+            feedId: feed.id,
+            title: item.title,
+            createdAt: now,
+            updatedAt: now,
+            description: item.description,
+            publishedAt: new Date(item.pubDate),
+        } satisfies NewPost);
+    }
 }
 
 export async function handlerAgg(cmdName: string, ...args: string[]) {
@@ -40,7 +51,7 @@ export async function handlerAgg(cmdName: string, ...args: string[]) {
 
     await new Promise<void>((resolve) => {
         process.on("SIGINT", () => {
-            console.log("Shutting down feed aggregator...");
+            console.log("losing down feed aggregator...");
             clearInterval(interval);
             resolve();
         });

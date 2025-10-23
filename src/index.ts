@@ -10,6 +10,7 @@ import {
   handlerRegister, 
   handlerReset,
   handlerUsers,
+  handlerBrowse,
   
 } from "./commands/commands";
 
@@ -34,6 +35,7 @@ export async function main() {
  await registerCommand(commandsRegistry,"follow",middlewareLoggedIn(handlerFollow));
 await registerCommand(commandsRegistry,"following",middlewareLoggedIn(handlerListFollowing));
 await registerCommand(commandsRegistry,"unfollow",middlewareLoggedIn(handlerUnfollow)); 
+await registerCommand(commandsRegistry, "browse", middlewareLoggedIn(handlerBrowse));
   try {
       await runCommand(commandsRegistry, cmdName, ...cmdArgs);
   } catch (err) {
