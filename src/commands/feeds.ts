@@ -1,8 +1,16 @@
 import { XMLParser } from "fast-xml-parser";
 import { readConfig } from "../config";
 import { User, Feed } from "src/lib/db/schema";
-import { createFeed, createFeedFollow, getFeedByUrl, getFeedFollowsForUser,  getFeeds } from "../lib/db/queries/feeds";
 import { getUserById, getUserByName } from "../lib/db/queries/users";
+import { 
+    createFeed, 
+    createFeedFollow, 
+    getFeedByUrl, 
+    getFeedFollowsForUser,  
+    getFeeds,
+    deleteFeedFollow
+ } from "../lib/db/queries/feeds";
+
 
 export async function fetchFeed(feedURL: string): Promise<RSSFeed> {
     const UA = "gator";
@@ -145,4 +153,12 @@ export async function handlerListFollowing(cmdName: string, user: User, ..._args
     for (const feedFollow of feedFollows) {
         console.log(feedFollow.feedName);
     }
+}
+
+export async function handlerUnfollow(cmdName: string, user: User,...args: string[]) {
+    if (args.length !== 1) {
+        throw new Error(`usage: ${cmdName} <follow_<url>`);
+    }
+    const url = args[0];
+    await deleteFeedFollow(user.id, url);
 }
