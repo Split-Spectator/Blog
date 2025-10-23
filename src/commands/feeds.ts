@@ -71,15 +71,11 @@ type RSSItem = {
     pubDate: string;
   };
 
-  export async function handlerAddFeed(cmdName: string, ...args: string[]) {
+  export async function handlerAddFeed(cmdName: string, user: User, ...args: string[]) {
     if (args.length !== 2) {
         throw new Error(`usage: ${cmdName} <feed_name> <url>`);
     }
-    const config = readConfig();
-    const user = await getUserByName(config.currentUserName!);
-    if (!user) {
-        throw new Error(`User ${config.currentUserName} not found`);
-    }
+ 
     const feedName = args[0];
     const url = args[1];
     const rows = await createFeed(feedName, url, user.id);
@@ -124,15 +120,11 @@ function printFeed(feed: Feed, user: User) {
 }
 
 
-export async function handlerFollow(cmdName: string, ...args: string[]) {
+export async function handlerFollow(cmdName: string, user: User, ...args: string[]) {
     if (args.length !== 1) {
         throw new Error(`usage: ${cmdName} <follow_<url>`);
     }
-    const config = readConfig();
-    const user = await getUserByName(config.currentUserName!);
-    if (!user) {
-        throw new Error("no user logged in");
-    }
+ 
     const url = args[0];
     const feed = await getFeedByUrl(url);
     if (!feed) {
@@ -143,12 +135,8 @@ export async function handlerFollow(cmdName: string, ...args: string[]) {
 }
 
 
-export async function handlerListFollowing(_cmdName: string, ..._args: string[]) {
-    const config = readConfig();
-    const user = await getUserByName(config.currentUserName!);
-    if (!user) {
-        throw new Error("no user logged in");
-    }
+export async function handlerListFollowing(cmdName: string, user: User, ..._args: string[]) {
+  
     const feedFollows = await getFeedFollowsForUser(user.id);
     if (feedFollows.length === 0) {
         console.log("You are not following any feeds yet.");

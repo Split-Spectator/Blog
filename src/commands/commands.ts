@@ -2,7 +2,9 @@
 import { DrizzleQueryError } from "drizzle-orm";
 import { readConfig, setUser } from "../config";
 import {fetchFeed, RSSFeed} from "./feeds.js";
+import { User } from "src/lib/db/schema";
 import { createUser, getUserByName, deleteUsers, getUsers  } from "src/lib/db/queries/users";
+import {middlewareLoggedIn} from "./middleware.js";
 export type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
 export type CommandsRegistry = Record<string, CommandHandler>;
  
@@ -121,3 +123,10 @@ export async function handlerUsers(_cmdName: string, ..._args: string[]) {
         console.log(JSON.stringify(result, null, 2));
 
     }
+
+    export type UserCommandHandler = (
+        cmdName: string,
+        user: User,
+        ...args: string[]
+      ) => Promise<void>;
+      

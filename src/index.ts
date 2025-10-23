@@ -1,4 +1,5 @@
 import { readConfig, setUser } from "./config.js";
+import { middlewareLoggedIn } from "./commands/middleware";
 import {handlerAddFeed, handlerFeeds, handlerFollow, handlerListFollowing}from "./commands/feeds";
 import {
   type CommandsRegistry,
@@ -27,10 +28,10 @@ export async function main() {
  await registerCommand(commandsRegistry, "reset", handlerReset);
  await registerCommand(commandsRegistry, "users", handlerUsers);
  await registerCommand(commandsRegistry, "agg", handlerAgg);
- await registerCommand(commandsRegistry, "addfeed", handlerAddFeed);
+ await registerCommand(commandsRegistry,"addfeed",middlewareLoggedIn(handlerAddFeed));
  await registerCommand(commandsRegistry, "feeds", handlerFeeds);
- await registerCommand(commandsRegistry, "follow", handlerFollow);
- await registerCommand(commandsRegistry, "following", handlerListFollowing);
+ await registerCommand(commandsRegistry,"follow",middlewareLoggedIn(handlerFollow));
+await registerCommand(commandsRegistry,"following",middlewareLoggedIn(handlerListFollowing));
   try {
       await runCommand(commandsRegistry, cmdName, ...cmdArgs);
   } catch (err) {
